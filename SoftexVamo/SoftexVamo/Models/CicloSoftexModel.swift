@@ -67,5 +67,7 @@ struct GastosDia: Identifiable {
         GastosDia(valor: 33, titulo: "Jantar"),
         GastosDia(valor: 11, titulo: "Uber")
     ]
+    
+    static let example = GastosDia(valor: 12, titulo: "Uber")
 }
 

@@ -28,7 +28,7 @@ struct CiclosListView: View {
                 }
                 .padding(.trailing)
             }
-            CicloInfoView(info: $viewModel.valueInfo)
+            CicloInfoView(gastos: $viewModel.gastosInfo, available: $viewModel.availableInfo)
                 .frame(width: 250, height: 250)
             CicloGastosView() {
                 addNewGastoSheet.toggle()
@@ -48,7 +48,8 @@ struct CiclosListView: View {
 
 final class CiclosListViewModel: ObservableObject {
     @Published var actualCiclo: CicloSoftex = CicloSoftex.example
-    @Published var valueInfo: [GastosDia] = []
+    @Published var gastosInfo: GastosDia = GastosDia.example
+    @Published var availableInfo: GastosDia = GastosDia.example
     var allCiclos: [CicloSoftex] = []
     var index: Int = 0
     
@@ -75,10 +76,8 @@ final class CiclosListViewModel: ObservableObject {
     
     private func updateCicloInfo() {
         let available = actualCiclo.valorTotal - actualCiclo.gastoTotal
-        valueInfo = [
-            GastosDia(valor: actualCiclo.gastoTotal, titulo: "Gasto"),
-            GastosDia(valor: available, titulo: "Disponivel")
-        ]
+        gastosInfo = GastosDia(valor: actualCiclo.gastoTotal, titulo: "Gasto")
+        availableInfo = GastosDia(valor: available, titulo: "Disponivel")
     }
     
     func createNewGasto(title: String, value: Decimal, date: Date) {

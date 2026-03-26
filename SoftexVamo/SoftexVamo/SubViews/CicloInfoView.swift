@@ -9,23 +9,31 @@ import SwiftUI
 import Charts
 
 struct CicloInfoView: View {
-    @Binding var info: [GastosDia]
+    @Binding var gastos: GastosDia
+    @Binding var available: GastosDia
     
     var body: some View {
         HStack {
-            Chart(info) { gasto in
+            Chart {
                 SectorMark(
-                    angle: .value("Valor", gasto.valor),
+                    angle: .value(gastos.titulo, gastos.valor),
                     innerRadius: MarkDimension.ratio(0.6),
                     angularInset: 4
                 )
-                    .cornerRadius(8)
-                    .foregroundStyle(by: .value("Gastos", gasto.titulo))
+                .foregroundStyle(.red)
+                .cornerRadius(8)
+                SectorMark(
+                    angle: .value(available.titulo, available.valor),
+                    innerRadius: MarkDimension.ratio(0.6),
+                    angularInset: 4
+                )
+                .foregroundStyle(.blue)
+                .cornerRadius(8)
             }
             VStack(alignment: .leading) {
-                Text("\(info.first?.titulo ?? ""): R$\(info.first?.valor ?? 0, specifier: "%.2f")")
+                Text("\(gastos.titulo): R$\(gastos.valor, specifier: "%.2f")")
                     .foregroundStyle(.red)
-                Text("\(info.last?.titulo ?? ""): R$\(info.last?.valor ?? 0, specifier: "%.2f")")
+                Text("\(available.titulo): R$\(available.valor, specifier: "%.2f")")
                     .foregroundStyle(.blue)
             }
             .padding(.leading)
@@ -36,8 +44,5 @@ struct CicloInfoView: View {
 
 
 #Preview {
-    CicloInfoView(info: .constant([
-        GastosDia(valor: 200, titulo: "Gasto"),
-        GastosDia(valor: 2000, titulo: "Sobrando")
-    ]))
+    CicloInfoView(gastos: .constant(GastosDia(valor: 200, titulo: "Gasto")), available: .constant(GastosDia(valor: 2000, titulo: "Sobrando")))
 }
