@@ -66,7 +66,9 @@ final class NewCicloViewModel: ObservableObject {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM"
         let periodo = "\(dateFormatter.string(from: startDate)) - \(dateFormatter.string(from: endDate))"
-        let newCiclo = CicloSoftex(dias: days, valorTotal: totalValue, gastoTotal: 0, periodo: periodo, diaria: saldo)
+        
+        let newCiclo = CicloSoftex(valor_total: totalValue, gasto_total: 0, periodo: periodo, diaria: saldo, dias: days)
+        
         printNewCicloData(newCiclo, numberOfDays: dayCount)
     }
     
@@ -74,7 +76,7 @@ final class NewCicloViewModel: ObservableObject {
         let text = """
             \(newCiclo.periodo)
             Quantidade de Dias: \(numberOfDays)
-            Valor Total: \(newCiclo.valorTotal.formatted(.currency(code: "BRL")))
+            Valor Total: \(newCiclo.valor_total.formatted(.currency(code: "BRL")))
             Valor por Dia: \(newCiclo.diaria.formatted(.currency(code: "BRL")))
             """
         textResult = text

@@ -36,7 +36,9 @@ struct CiclosListView: View {
                 .environmentObject(CicloGastosViewModel(ciclo: viewModel.actualCiclo))
         }
         .onAppear {
-            viewModel.fetchAllCiclos()
+            Task{
+                await viewModel.fetchAllCiclos()
+            }
         }
         .sheet(isPresented: $addNewGastoSheet) {
             AddNewGastoSheetView { title, value, date in
@@ -52,11 +54,31 @@ final class CiclosListViewModel: ObservableObject {
     var allCiclos: [CicloSoftex] = []
     var index: Int = 0
     
-    func fetchAllCiclos() {
-        allCiclos = CicloSoftex.examples
-        actualCiclo = allCiclos.last ?? CicloSoftex.example
-        index = allCiclos.count - 1
-        updateCicloInfo()
+    func fetchAllCiclos() async {
+        guard let url = URL(string: "http://127.0.0.1:8000/usuario/ciclos/1") else { return }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+        
+
+            let ciclos = try decoder.decode([CicloSoftex].self, from: data)
+            
+            print(ciclos)
+
+            DispatchQueue.main.async {
+                self.allCiclos = ciclos
+                self.actualCiclo = ciclos.last!
+                self.index = ciclos.count - 1
+                self.updateCicloInfo()
+            }
+
+        } catch {
+            
+            print("Erro ao buscar ciclos:", error)
+        }
     }
     
     func nextCiclo() {
@@ -74,9 +96,9 @@ final class CiclosListViewModel: ObservableObject {
     }
     
     private func updateCicloInfo() {
-        let available = actualCiclo.valorTotal - actualCiclo.gastoTotal
+        let available = actualCiclo.valor_total - actualCiclo.gasto_total
         valueInfo = [
-            GastosDia(valor: actualCiclo.gastoTotal, titulo: "Gasto"),
+            GastosDia(valor: actualCiclo.gasto_total, titulo: "Gasto"),
             GastosDia(valor: available, titulo: "Disponivel")
         ]
     }
@@ -84,7 +106,7 @@ final class CiclosListViewModel: ObservableObject {
     func createNewGasto(title: String, value: Decimal, date: Date) {
         let valueFloat = Float(value.description) ?? 0.0
         let gasto = GastosDia(valor: valueFloat, titulo: title)
-        actualCiclo.gastoTotal += valueFloat
+        actualCiclo.gasto_total += valueFloat
         print(gasto)
     }
 }

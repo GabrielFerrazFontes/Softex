@@ -7,27 +7,51 @@
 
 import Foundation
 
-struct CicloSoftex {
+struct CicloSoftex: Codable, Identifiable {
+    var id = UUID() // só pra UI
+    var backendId: Int?
+    var valor_total: Float
+    var gasto_total: Float
+    var periodo: String
+    var diaria: Float
     var dias: [DiaSoftex]
-    let valorTotal: Float
-    var gastoTotal: Float
-    let periodo: String
-    let diaria: Float
+    
+    enum CodingKeys: String, CodingKey {
+            case backendId = "id" // 👈 mapeia o id do backend
+            case valor_total
+            case gasto_total
+            case periodo
+            case diaria
+            case dias
+        }
     
     static let examples = [
-        CicloSoftex(dias: DiaSoftex.examples, valorTotal: 2145, gastoTotal: 214, periodo: "10/03 - 17/03", diaria: 180),
-        CicloSoftex(dias: DiaSoftex.examples1, valorTotal: 2446, gastoTotal: 214, periodo: "18/03 - 25/03", diaria: 167),
-        CicloSoftex(dias: DiaSoftex.examples, valorTotal: 2162, gastoTotal: 214, periodo: "26/03 - 01/04", diaria: 172)
-    ]
-    
-    static let example = CicloSoftex(dias: DiaSoftex.examples, valorTotal: 2145, gastoTotal: 214, periodo: "10/03 - 17/03", diaria: 180)
-}
+        CicloSoftex(valor_total: 2145, gasto_total: 214, periodo: "10/03 - 17/03", diaria: 180, dias: DiaSoftex.examples),
+        CicloSoftex(valor_total: 2446, gasto_total: 214, periodo: "18/03 - 25/03", diaria: 167, dias: DiaSoftex.examples1),
+        CicloSoftex(valor_total: 2162, gasto_total: 214, periodo: "26/03 - 01/04", diaria: 172, dias: DiaSoftex.examples),
 
-struct DiaSoftex: Identifiable {
-    let id = UUID()
+        ]
+    
+    static let example = CicloSoftex(valor_total: 2145, gasto_total: 214, periodo: "10/03 - 17/03", diaria: 180, dias: DiaSoftex.examples)
+}
+    
+//
+//    
+//
+
+struct DiaSoftex: Codable, Identifiable {
+    var id = UUID() // só pra UI
+    var backendId: Int?
     var gastos: [GastosDia]
     let data: Date
     var saldo: Float
+    
+    enum CodingKeys: String, CodingKey {
+            case backendId = "id"
+            case gastos
+            case data
+            case saldo
+        }
     
     static let examples = [
         DiaSoftex(gastos: GastosDia.examples, data: Date.now, saldo: 64),
@@ -44,11 +68,18 @@ struct DiaSoftex: Identifiable {
     ]
 }
 
-struct GastosDia: Identifiable {
-    let id = UUID()
+struct GastosDia: Codable, Identifiable  {
+    var id = UUID()
+    var backendId: Int?
     let valor: Float
     let titulo: String
     
+    enum CodingKeys: String, CodingKey {
+            case backendId = "id" // 👈 mapeia o id do backend
+            case valor
+            case titulo
+        }
+//
     static let examples = [ // 60
         GastosDia(valor: 20, titulo: "Almoco"),
         GastosDia(valor: 30, titulo: "Jantar"),
