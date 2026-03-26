@@ -12,6 +12,7 @@ struct CicloGastosView: View {
     @EnvironmentObject var viewModel: CicloGastosViewModel
     
     let action: () -> Void
+    let deleteAction: (UUID, UUID) -> Void
     
     var body: some View {
         VStack {
@@ -25,7 +26,9 @@ struct CicloGastosView: View {
                             createGastoCell(gasto: gasto)
                         }
                         .onDelete { indexSet in
-                            viewModel.deleteGasto(dia: &dia, offsets: indexSet)
+                            let diaID = dia.id
+                            let gastoID = viewModel.deleteGasto(dia: &dia, offsets: indexSet)
+                            deleteAction(diaID, gastoID)
                         }
                     }
                 }
@@ -62,6 +65,8 @@ struct CicloGastosView: View {
 #Preview {
     CicloGastosView() {
         print("ok")
+    } deleteAction: { _,_ in
+        print("")
     }
         .environmentObject(CicloGastosViewModel(ciclo: CicloSoftex.example))
 }
@@ -79,7 +84,11 @@ final class CicloGastosViewModel: ObservableObject {
         return dateFormatter.string(from: date)
     }
     
-    func deleteGasto(dia: inout DiaSoftex, offsets: IndexSet) {
-        dia.gastos.remove(atOffsets: offsets)
+    func deleteGasto(dia: inout DiaSoftex, offsets: IndexSet) -> UUID {
+        var gastoID = UUID()
+        for offset in offsets {
+            gastoID = dia.gastos.remove(at: offset).id
+        }
+        return gastoID
     }
 }

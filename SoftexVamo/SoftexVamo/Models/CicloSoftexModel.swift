@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CicloSoftex {
+struct CicloSoftex: Codable {
     var dias: [DiaSoftex]
     let valorTotal: Float
     var gastoTotal: Float
@@ -23,8 +23,8 @@ struct CicloSoftex {
     static let example = CicloSoftex(dias: DiaSoftex.examples, valorTotal: 2145, gastoTotal: 214, periodo: "10/03 - 17/03", diaria: 180)
 }
 
-struct DiaSoftex: Identifiable {
-    let id = UUID()
+struct DiaSoftex: Identifiable, Codable {
+    var id = UUID()
     var gastos: [GastosDia]
     let data: Date
     var saldo: Float
@@ -44,8 +44,8 @@ struct DiaSoftex: Identifiable {
     ]
 }
 
-struct GastosDia: Identifiable {
-    let id = UUID()
+struct GastosDia: Identifiable, Codable {
+    var id = UUID()
     let valor: Float
     let titulo: String
     

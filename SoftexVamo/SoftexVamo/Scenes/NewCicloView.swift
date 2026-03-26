@@ -55,22 +55,36 @@ final class NewCicloViewModel: ObservableObject {
     @Published var textResult = ""
     
     func createNewCiclo(startDate: Date, endDate: Date, totalValue: Float) {
-        var days: [DiaSoftex] = []
         let dayCount = Calendar.current.datesBetween(startDate, and: endDate)
         let saldo = totalValue / Float(dayCount)
+        var days: [DiaSoftex] = createAllDays(dayCount: dayCount, startDate: startDate, saldo: saldo)
+        let periodo = createPeriodoString(from: startDate, to: endDate)
+        let newCiclo = CicloSoftex(dias: days, valorTotal: totalValue, gastoTotal: 0, periodo: periodo, diaria: saldo)
+        postToNetwork(newCiclo: newCiclo, daysCount: dayCount)
+    }
+    
+    private func createAllDays(dayCount: Int, startDate: Date, saldo: Float) -> [DiaSoftex] {
+        var days: [DiaSoftex] = []
         for i in 0...dayCount - 1 {
             let time = 86400 * i
             let date = startDate.addingTimeInterval(TimeInterval(time))
             days.append(DiaSoftex(gastos: [], data: date, saldo: saldo))
         }
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd/MM"
-        let periodo = "\(dateFormatter.string(from: startDate)) - \(dateFormatter.string(from: endDate))"
-        let newCiclo = CicloSoftex(dias: days, valorTotal: totalValue, gastoTotal: 0, periodo: periodo, diaria: saldo)
-        printNewCicloData(newCiclo, numberOfDays: dayCount)
+        return days
     }
     
-    func printNewCicloData(_ newCiclo: CicloSoftex, numberOfDays: Int) {
+    private func createPeriodoString(from: Date, to: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd/MM"
+        return "\(dateFormatter.string(from: from)) - \(dateFormatter.string(from: to))"
+    }
+    
+    private func postToNetwork(newCiclo: CicloSoftex, daysCount: Int) {
+        // Network
+        printNewCicloData(newCiclo, numberOfDays: daysCount)
+    }
+    
+    private func printNewCicloData(_ newCiclo: CicloSoftex, numberOfDays: Int) {
         let text = """
             \(newCiclo.periodo)
             Quantidade de Dias: \(numberOfDays)

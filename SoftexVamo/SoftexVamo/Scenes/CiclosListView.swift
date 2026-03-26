@@ -32,6 +32,8 @@ struct CiclosListView: View {
                 .frame(width: 250, height: 250)
             CicloGastosView() {
                 addNewGastoSheet.toggle()
+            } deleteAction: { diaID, gastoID in
+                viewModel.deleteGasto(diaID: diaID, gastoID: gastoID)
             }
                 .environmentObject(CicloGastosViewModel(ciclo: viewModel.actualCiclo))
         }
@@ -53,13 +55,6 @@ final class CiclosListViewModel: ObservableObject {
     var allCiclos: [CicloSoftex] = []
     var index: Int = 0
     
-    func fetchAllCiclos() {
-        allCiclos = CicloSoftex.examples
-        actualCiclo = allCiclos.last ?? CicloSoftex.example
-        index = allCiclos.count - 1
-        updateCicloInfo()
-    }
-    
     func nextCiclo() {
         guard index <= allCiclos.count - 2 else { return }
         index += 1
@@ -80,11 +75,22 @@ final class CiclosListViewModel: ObservableObject {
         availableInfo = GastosDia(valor: available, titulo: "Disponivel")
     }
     
+    func fetchAllCiclos() {
+        allCiclos = CicloSoftex.examples // Network
+        actualCiclo = allCiclos.last ?? CicloSoftex.example
+        index = allCiclos.count - 1
+        updateCicloInfo()
+    }
+    
     func createNewGasto(title: String, value: Decimal, date: Date) {
         let valueFloat = Float(value.description) ?? 0.0
         let gasto = GastosDia(valor: valueFloat, titulo: title)
-        actualCiclo.gastoTotal += valueFloat
         print(gasto)
+        // Network
+    }
+    
+    func deleteGasto(diaID: UUID, gastoID: UUID) {
+        // Network
     }
 }
 
