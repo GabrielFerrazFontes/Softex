@@ -26,7 +26,18 @@ struct SoftexVamoApp: App {
     var body: some Scene {
         WindowGroup {
 //            ContentView()
-            CicloGastosView()
+            TabView {
+                CiclosListView()
+                    .environmentObject(CiclosListViewModel())
+                    .tabItem {
+                        Label("Ciclos", systemImage: "airplane.up.right")
+                    }
+                NewCicloView()
+                    .environmentObject(NewCicloViewModel())
+                    .tabItem {
+                        Label("Novo Ciclo", systemImage: "plus")
+                    }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

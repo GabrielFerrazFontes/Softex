@@ -29,12 +29,11 @@ struct CiclosListView: View {
                 .padding(.trailing)
             }
             CicloInfoView(info: $viewModel.valueInfo)
-                .frame(width: 200, height: 250)
-            CicloGastosView()
-                .environmentObject(CicloGastosViewModel(ciclo: viewModel.actualCiclo))
-            Button("Adicionar Novo Gasto", systemImage: "plus") {
+                .frame(width: 250, height: 250)
+            CicloGastosView() {
                 addNewGastoSheet.toggle()
             }
+                .environmentObject(CicloGastosViewModel(ciclo: viewModel.actualCiclo))
         }
         .onAppear {
             viewModel.fetchAllCiclos()

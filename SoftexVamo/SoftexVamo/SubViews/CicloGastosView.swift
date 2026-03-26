@@ -11,9 +11,14 @@ import Combine
 struct CicloGastosView: View {
     @EnvironmentObject var viewModel: CicloGastosViewModel
     
+    let action: () -> Void
+    
     var body: some View {
         VStack {
             List {
+                Button("Adicionar Novo Gasto", systemImage: "plus") {
+                    action()
+                }
                 ForEach($viewModel.ciclo.dias) { $dia in
                     Section(header: createSectionHeader(dia: dia)) {
                         ForEach(dia.gastos) { gasto in
@@ -24,11 +29,11 @@ struct CicloGastosView: View {
                         }
                     }
                 }
+                Button("Apagar Ciclo", systemImage: "trash") {
+                    print("Delete")
+                }
+                .foregroundStyle(.red)
             }
-            Button("Apagar Ciclo", systemImage: "trash") {
-                print("Delete")
-            }
-            .foregroundStyle(.red)
         }
     }
     
@@ -55,7 +60,9 @@ struct CicloGastosView: View {
 }
 
 #Preview {
-    CicloGastosView()
+    CicloGastosView() {
+        print("ok")
+    }
         .environmentObject(CicloGastosViewModel(ciclo: CicloSoftex.example))
 }
 
