@@ -88,7 +88,7 @@ final class NewCicloViewModel: ObservableObject {
         let text = """
             \(newCiclo.periodo)
             Quantidade de Dias: \(numberOfDays)
-            Valor Total: \(newCiclo.valorTotal.formatted(.currency(code: "BRL")))
+            Valor Total: \(newCiclo.valor_total.formatted(.currency(code: "BRL")))
             Valor por Dia: \(newCiclo.diaria.formatted(.currency(code: "BRL")))
             """
         textResult = text
