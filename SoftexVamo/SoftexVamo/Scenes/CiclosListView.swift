@@ -57,29 +57,18 @@ final class CiclosListViewModel: ObservableObject {
     var allCiclos: [CicloSoftex] = []
     var index: Int = 0
     
+    @MainActor
     func fetchAllCiclos1() async {
-        guard let url = URL(string: "https://henley-schedular-sufferably.ngrok-free.dev/usuario/ciclos/1") else { return }
-
+       
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-        
+            let ciclos = try await NetworkManager.shared.fetchAllCiclos()
 
-            let ciclos = try decoder.decode([CicloSoftex].self, from: data)
-            
-            print(ciclos)
-
-            DispatchQueue.main.async {
-                self.allCiclos = ciclos
-                self.actualCiclo = ciclos.last!
-                self.index = ciclos.count - 1
-                self.updateCicloInfo()
-            }
+            self.allCiclos = ciclos
+            self.actualCiclo = ciclos.last!
+            self.index = ciclos.count - 1
+            self.updateCicloInfo()
 
         } catch {
-            
             print("Erro ao buscar ciclos:", error)
         }
     }

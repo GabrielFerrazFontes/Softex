@@ -39,7 +39,9 @@ struct NewCicloView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 Button("", systemImage: "checkmark.circle") {
-                    viewModel.createNewCiclo(startDate: startDate, endDate: endDate, totalValue: totalValue)
+                    Task{
+                        await viewModel.createNewCiclo(startDate: startDate, endDate: endDate, totalValue: totalValue)
+                    }
                 }
             }
         }
@@ -54,15 +56,15 @@ struct NewCicloView: View {
 final class NewCicloViewModel: ObservableObject {
     @Published var textResult = ""
     
-    func createNewCiclo(startDate: Date, endDate: Date, totalValue: Float) {
+    func createNewCiclo(startDate: Date, endDate: Date, totalValue: Float) async {
         let dayCount = Calendar.current.datesBetween(startDate, and: endDate)
         let saldo = totalValue / Float(dayCount)
         var days: [DiaSoftex] = createAllDays(dayCount: dayCount, startDate: startDate, saldo: saldo)
         let periodo = createPeriodoString(from: startDate, to: endDate)
         
-        let newCiclo = CicloSoftex(valor_total: totalValue, gasto_total: 0, periodo: periodo, diaria: saldo, dias: days)
+        let newCiclo = CicloSoftex(valor_total: totalValue, gasto_total: 0, periodo: periodo, diaria: saldo, dias: days, id_usuario: 1)
  
-        postToNetwork(newCiclo: newCiclo, daysCount: dayCount)
+        await postToNetwork(newCiclo: newCiclo, daysCount: dayCount)
     }
     
     private func createAllDays(dayCount: Int, startDate: Date, saldo: Float) -> [DiaSoftex] {
@@ -81,8 +83,14 @@ final class NewCicloViewModel: ObservableObject {
         return "\(dateFormatter.string(from: from)) - \(dateFormatter.string(from: to))"
     }
     
-    private func postToNetwork(newCiclo: CicloSoftex, daysCount: Int) {
+    private func postToNetwork(newCiclo: CicloSoftex, daysCount: Int) async {
         // Network
+        do {
+            try await NetworkManager.shared.postCiclo(newCiclo: newCiclo )
+
+        } catch {
+            print("Erro ao criar o ciclo:", error)
+        }
         printNewCicloData(newCiclo, numberOfDays: daysCount)
     }
     

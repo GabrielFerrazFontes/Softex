@@ -15,6 +15,7 @@ struct CicloSoftex: Codable, Identifiable {
     var periodo: String
     var diaria: Float
     var dias: [DiaSoftex]
+    var id_usuario: Int?
     
     enum CodingKeys: String, CodingKey {
             case backendId = "id" // 👈 mapeia o id do backend
@@ -23,6 +24,7 @@ struct CicloSoftex: Codable, Identifiable {
             case periodo
             case diaria
             case dias
+            case id_usuario
         }
     
     static let examples = [
