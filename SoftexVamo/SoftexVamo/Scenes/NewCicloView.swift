@@ -59,7 +59,9 @@ final class NewCicloViewModel: ObservableObject {
         let saldo = totalValue / Float(dayCount)
         var days: [DiaSoftex] = createAllDays(dayCount: dayCount, startDate: startDate, saldo: saldo)
         let periodo = createPeriodoString(from: startDate, to: endDate)
-        let newCiclo = CicloSoftex(dias: days, valorTotal: totalValue, gastoTotal: 0, periodo: periodo, diaria: saldo)
+        
+        let newCiclo = CicloSoftex(valor_total: totalValue, gasto_total: 0, periodo: periodo, diaria: saldo, dias: days)
+ 
         postToNetwork(newCiclo: newCiclo, daysCount: dayCount)
     }
     

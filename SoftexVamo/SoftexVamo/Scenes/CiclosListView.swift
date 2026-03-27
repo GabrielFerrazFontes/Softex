@@ -39,7 +39,7 @@ struct CiclosListView: View {
         }
         .onAppear {
             Task{
-                await viewModel.fetchAllCiclos()
+                await viewModel.fetchAllCiclos1()
             }
         }
         .sheet(isPresented: $addNewGastoSheet) {
@@ -99,8 +99,8 @@ final class CiclosListViewModel: ObservableObject {
     }
     
     private func updateCicloInfo() {
-        let available = actualCiclo.valorTotal - actualCiclo.gastoTotal
-        gastosInfo = GastosDia(valor: actualCiclo.gastoTotal, titulo: "Gasto")
+        let available = actualCiclo.valor_total - actualCiclo.gasto_total
+        gastosInfo = GastosDia(valor: actualCiclo.gasto_total, titulo: "Gasto")
         availableInfo = GastosDia(valor: available, titulo: "Disponivel")
     }
     
@@ -110,10 +110,10 @@ final class CiclosListViewModel: ObservableObject {
         index = allCiclos.count - 1
         updateCicloInfo()
         let available = actualCiclo.valor_total - actualCiclo.gasto_total
-        valueInfo = [
-            GastosDia(valor: actualCiclo.gasto_total, titulo: "Gasto"),
-            GastosDia(valor: available, titulo: "Disponivel")
-        ]
+//        valueInfo = [
+//            GastosDia(valor: actualCiclo.gasto_total, titulo: "Gasto"),
+//            GastosDia(valor: available, titulo: "Disponivel")
+//        ]
     }
     
     func createNewGasto(title: String, value: Decimal, date: Date) {
