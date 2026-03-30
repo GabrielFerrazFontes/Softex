@@ -6,7 +6,6 @@ from services import ciclo_service
 
 router = APIRouter()
 
-
 @router.post("/ciclos", response_model=schemas.CicloResponse)
 def criar_ciclo(ciclo: schemas.CicloCreate, db: Session = Depends(get_db)):
     return ciclo_service.criar_ciclo(db, ciclo)

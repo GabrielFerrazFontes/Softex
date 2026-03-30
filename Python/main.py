@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import *
 from fastapi.middleware.cors import CORSMiddleware
 from routes.ciclo_routes import router as ciclo_router
+from routes.gasto_routes import router as gasto_router
 
 import models, schemas
 
@@ -17,15 +18,9 @@ app.add_middleware(
 )
 
 app.include_router(ciclo_router)
+app.include_router(gasto_router)
 
 Base.metadata.create_all(bind=engine)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @app.post("/usuarios", response_model=schemas.UserResponse)
 def criar_usuario(user: schemas.UserCreate, db: Session = Depends(get_db)):

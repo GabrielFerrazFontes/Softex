@@ -43,8 +43,18 @@ struct CiclosListView: View {
             }
         }
         .sheet(isPresented: $addNewGastoSheet) {
-            AddNewGastoSheetView { title, value, date in
-                viewModel.createNewGasto(title: title, value: value, date: date)
+            AddNewGastoSheetView(
+                selectedDia: viewModel.actualCiclo.dias.first!,
+                dias: viewModel.actualCiclo.dias
+            ) { title, value, dia in
+                
+                Task {
+                    try await viewModel.createNewGasto(
+                        title: title,
+                        value: value,
+                        dia: dia
+                    )
+                }
             }
         }
     }
@@ -93,24 +103,19 @@ final class CiclosListViewModel: ObservableObject {
         availableInfo = GastosDia(valor: available, titulo: "Disponivel")
     }
     
-    func fetchAllCiclos1() {
-        allCiclos = CicloSoftex.examples // Network
-        actualCiclo = allCiclos.last ?? CicloSoftex.example
-        index = allCiclos.count - 1
-        updateCicloInfo()
-        let available = actualCiclo.valor_total - actualCiclo.gasto_total
-//        valueInfo = [
-//            GastosDia(valor: actualCiclo.gasto_total, titulo: "Gasto"),
-//            GastosDia(valor: available, titulo: "Disponivel")
-//        ]
-    }
-    
-    func createNewGasto(title: String, value: Decimal, date: Date) {
+    func createNewGasto( title: String, value: Decimal, dia: DiaSoftex) async throws {
         let valueFloat = Float(value.description) ?? 0.0
-        let gasto = GastosDia(valor: valueFloat, titulo: title)
-        actualCiclo.gasto_total += valueFloat
-        print(gasto)
-        // Network
+        
+        do {
+            let gasto = GastosDia(valor: valueFloat, titulo: title)
+            
+            try await NetworkManager.shared.postGasto(newGasto: gasto, diaId: dia.backendId!)
+            
+            await fetchAllCiclos1()
+                
+        } catch {
+            print("Erro ao criar gasto:", error)
+        }
     }
     
     func deleteGasto(diaID: UUID, gastoID: UUID) {

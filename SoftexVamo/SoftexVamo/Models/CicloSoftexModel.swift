@@ -41,7 +41,7 @@ struct CicloSoftex: Codable, Identifiable {
 //    
 //
 
-struct DiaSoftex: Codable, Identifiable {
+struct DiaSoftex: Codable, Identifiable, Hashable {
     var id = UUID() // só pra UI
     var backendId: Int?
     var gastos: [GastosDia]
@@ -70,7 +70,7 @@ struct DiaSoftex: Codable, Identifiable {
     ]
 }
 
-struct GastosDia: Codable, Identifiable  {
+struct GastosDia: Codable, Identifiable, Hashable  {
     var id = UUID()
     var backendId: Int?
     let valor: Float

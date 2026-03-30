@@ -22,12 +22,12 @@ final class NetworkManager {
             delegate: InsecureSessionDelegate(),
             delegateQueue: nil
         )
-
+        
         let (data, _) = try await session.data(from: url)
-
+        
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-
+        
         return try decoder.decode([CicloSoftex].self, from: data)
     }
     
@@ -50,62 +50,61 @@ final class NetworkManager {
             delegate: InsecureSessionDelegate(),
             delegateQueue: nil
         )
-
+        
         let (data, response) = try await session.data(for: request)
         
         print(String(data: data, encoding: .utf8)!)
-
+        
         guard let httpResponse = response as? HTTPURLResponse,
               200...299 ~= httpResponse.statusCode else {
             throw URLError(.badServerResponse)
         }
-
+        
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-
+        
     }
     
-    func postNewCiclo(url: URL, newCiclo: CicloSoftex){
+    
+    func postGasto(newGasto: GastosDia, diaId: Int) async throws -> Void {
+        
+        guard let url = URL(string: "https://henley-schedular-sufferably.ngrok-free.dev/dias/\(diaId)/gastos") else { return }
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let encoder = JSONEncoder()
-        do {
-            request.httpBody = try encoder.encode(newCiclo)
-        } catch {
-            print(error)
-            return
+        encoder.dateEncodingStrategy = .iso8601
+        
+        request.httpBody = try encoder.encode(newGasto)
+        
+        let session = URLSession(
+            configuration: .default,
+            delegate: InsecureSessionDelegate(),
+            delegateQueue: nil
+        )
+        
+        let (data, response) = try await session.data(for: request)
+        
+        print(String(data: data, encoding: .utf8)!)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              200...299 ~= httpResponse.statusCode else {
+            throw URLError(.badServerResponse)
         }
         
-        URLSession.shared.dataTaskPublisher(for: request)
-            .tryMap { data, response in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      200...299 ~= httpResponse.statusCode else {
-                    throw URLError(.badServerResponse)
-                }
-                return data
-            }
-            .decode(type: CicloSoftex.self, decoder: JSONDecoder())
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    print("Error creating post: \(error.localizedDescription)")
-                }
-            }, receiveValue: { cicloResponse in
-                print("Successfully created ciclo with Periodo: \(cicloResponse.periodo)")
-            })
-            .store(in: &cancellables)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
     }
+    
     
     class InsecureSessionDelegate: NSObject, URLSessionDelegate {
         func urlSession(_ session: URLSession,
                         didReceive challenge: URLAuthenticationChallenge,
                         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-
+            
             if let trust = challenge.protectionSpace.serverTrust {
                 completionHandler(.useCredential, URLCredential(trust: trust))
             } else {
